@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hex Floor Wall Editor</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #151515;
+      --panel: #202020;
+      --panel-2: #292929;
+      --text: #f1f1f1;
+      --muted: #a8a8a8;
+      --line: #3a3a3a;
+      --floor: #8a8a8a;
+      --wall: #2f2f2f;
+      --door-locked: #b74444;
+      --door-closed: #c98a2e;
+      --door-open: #2a9d6f;
+      --monster-alive: #7c3aed;
+      --monster-injured: #ef4444;
+      --monster-dead: #5b6472;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; }
+    body {
+      min-height: 100vh;
+      font-family: Inter, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: grid;
+      grid-template-columns: 280px 1fr;
+    }
+    aside {
+      background: var(--panel);
+      border-right: 1px solid var(--line);
+      padding: 20px;
+      overflow: auto;
+    }
+    h1 { margin: 0 0 10px; font-size: 22px; }
+    p { color: var(--muted); line-height: 1.5; font-size: 14px; }
+    .legend { display: grid; gap: 10px; margin: 18px 0 24px; }
+    .legend-item { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--muted); }
+    .swatch { width: 18px; height: 18px; border-radius: 4px; border: 1px solid rgba(255,255,255,.15); }
+    .help { padding: 14px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 12px; }
+    main { position: relative; overflow: hidden; width: 100vw; height: 100vh; }
+    canvas { display: block; width: 100%; height: 100%; cursor: crosshair; }
+    .menu {
+      position: absolute; min-width: 140px; background: #101010; border: 1px solid var(--line);
+      border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,.35); padding: 6px; display: none; z-index: 10;
+    }
+    .menu.open { display: block; }
+    .menu button {
+      width: 100%; border: 0; background: transparent; color: var(--text); text-align: left;
+      padding: 10px 12px; border-radius: 8px; cursor: pointer; font: inherit;
+    }
+    .menu button:hover, .menu button:focus-visible { background: var(--panel-2); outline: none; }
+  </style>
+</head>
+<body>
+
+  <main>
+    <canvas id="canvas"></canvas>
+    <div class="menu" id="menu">
+      <button type="button" data-role="terrain">Wall</button>
+      <button type="button" data-role="door">Door</button>
+      <button type="button" data-role="monster">Monster</button>
+    </div>
+  </main>
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const menu = document.getElementById('menu');
+
+    const HEX_SIZE = 36;
+    const COLS = 15;
+    const ROWS = 12;
+    const PAD = HEX_SIZE + 8;
+
+    const ROLE = { TERRAIN: 'terrain', DOOR: 'door', MONSTER: 'monster' };
+    const ROLE_STATES = { terrain: ['floor', 'wall'], door: ['locked', 'closed', 'open'], monster: ['alive', 'injured', 'dead'] };
+    const FALLBACK_COLORS = { floor: '#8a8a8a', wall: '#2f2f2f', locked: '#b74444', closed: '#c98a2e', open: '#2a9d6f', alive: '#7c3aed', injured: '#ef4444', dead: '#5b6472' };
+    const IMAGE_SOURCES = { floor: 'images/floor.png', wall: 'images/wall.png', locked: 'images/door_locked.png', closed: 'images/door_closed.png', open: 'images/door_open.png', alive: 'images/monster_alive.png', injured: 'images/monster_injured.png', dead: 'images/monster_dead.png' };
+    const IMAGES = {};
+    const IMAGE_READY = {};
+
+    let tiles = [];
+    let hoveredTile = null;
+    let contextTile = null;
+    let gridOrigin = { x: 0, y: 0 };
+
+    function resizeCanvas() {
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = Math.round(rect.width * dpr);
+      canvas.height = Math.round(rect.height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function hexToPixel(q, r) {
+      const x = gridOrigin.x + (q * HEX_SIZE * Math.sqrt(3)) + ((r % 2) * HEX_SIZE * Math.sqrt(3) / 2);
+      const y = gridOrigin.y + (r * HEX_SIZE * 1.5);
+      return { x, y };
+    }
+
+    function fitGridToCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      const hexW = HEX_SIZE * Math.sqrt(3);
+      const hexH = HEX_SIZE * 2;
+      const gridWidth = COLS * hexW + hexW / 2;
+      const gridHeight = (ROWS - 1) * (HEX_SIZE * 1.5) + hexH;
+      const leftPadding = Math.max(PAD, (rect.width - gridWidth) / 2 + hexW / 2);
+      const topPadding = Math.max(PAD, (rect.height - gridHeight) / 2 + HEX_SIZE);
+      gridOrigin = { x: leftPadding, y: topPadding };
+    }
+
+    function buildGrid() {
+      tiles = [];
+      for (let r = 0; r < ROWS; r++) {
+        for (let q = 0; q < COLS; q++) {
+          const p = hexToPixel(q, r);
+          tiles.push({ q, r, x: p.x, y: p.y, role: ROLE.TERRAIN, state: 'floor' });
+        }
+      }
+    }
+
+    function hexCorners(cx, cy, size) {
+      const pts = [];
+      for (let i = 0; i < 6; i++) {
+        const angle = (Math.PI / 180) * (60 * i - 30);
+        pts.push([cx + size * Math.cos(angle), cy + size * Math.sin(angle)]);
+      }
+      return pts;
+    }
+
+    function pointInHex(x, y, tile) {
+      const pts = hexCorners(tile.x, tile.y, HEX_SIZE - 1);
+      let inside = false;
+      for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+        const xi = pts[i][0], yi = pts[i][1];
+        const xj = pts[j][0], yj = pts[j][1];
+        const intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / ((yj - yi) || 1e-9) + xi);
+        if (intersect) inside = !inside;
+      }
+      return inside;
+    }
+
+    function hitTest(x, y) {
+      for (let i = tiles.length - 1; i >= 0; i--) {
+        if (pointInHex(x, y, tiles[i])) return tiles[i];
+      }
+      return null;
+    }
+
+    function getPoint(event) {
+      const rect = canvas.getBoundingClientRect();
+      return { x: event.clientX - rect.left, y: event.clientY - rect.top };
+    }
+
+    function nextState(tile) {
+      const states = ROLE_STATES[tile.role];
+      const index = states.indexOf(tile.state);
+      tile.state = states[(index + 1) % states.length];
+    }
+
+    function assignRole(tile, role) {
+      tile.role = role;
+      tile.state = ROLE_STATES[role][0];
+    }
+
+    function drawHexPath(tile) {
+      const path = new Path2D();
+      const pts = hexCorners(tile.x, tile.y, HEX_SIZE - 1);
+      pts.forEach(([x, y], i) => i === 0 ? path.moveTo(x, y) : path.lineTo(x, y));
+      path.closePath();
+      return path;
+    }
+
+    function drawFallback(tile, path) {
+      ctx.fillStyle = FALLBACK_COLORS[tile.state];
+      ctx.fill(path);
+      ctx.strokeStyle = '#2d2d2d';
+      ctx.lineWidth = 1.5;
+      ctx.stroke(path);
+    }
+
+    function drawImageInsideHex(tile, path) {
+      const img = IMAGES[tile.state];
+      if (!img || !IMAGE_READY[tile.state]) return false;
+      ctx.save();
+      ctx.clip(path);
+      const size = HEX_SIZE * 2;
+      ctx.drawImage(img, tile.x - size / 2, tile.y - size / 2, size, size);
+      ctx.restore();
+      ctx.strokeStyle = '#2d2d2d';
+      ctx.lineWidth = 1.5;
+      ctx.stroke(path);
+      return true;
+    }
+
+    function drawTile(tile) {
+      const path = drawHexPath(tile);
+      if (!drawImageInsideHex(tile, path)) drawFallback(tile, path);
+      if (tile === hoveredTile) {
+        ctx.strokeStyle = '#6aa9ff';
+        ctx.lineWidth = 3;
+        ctx.stroke(path);
+      }
+    }
+
+    function draw() {
+      const width = canvas.getBoundingClientRect().width;
+      const height = canvas.getBoundingClientRect().height;
+      ctx.clearRect(0, 0, width, height);
+      for (const tile of tiles) drawTile(tile);
+    }
+
+    function preloadImages() {
+      const entries = Object.entries(IMAGE_SOURCES);
+      return Promise.all(entries.map(([state, src]) => new Promise((resolve) => {
+        const img = new Image();
+        IMAGES[state] = img;
+        IMAGE_READY[state] = false;
+        img.onload = () => { IMAGE_READY[state] = true; resolve(); };
+        img.onerror = () => { IMAGE_READY[state] = false; resolve(); };
+        img.src = src;
+      })));
+    }
+
+    function rebuild() {
+      fitGridToCanvas();
+      buildGrid();
+      resizeCanvas();
+      draw();
+    }
+
+    function hideMenu() {
+      menu.classList.remove('open');
+      contextTile = null;
+    }
+
+    canvas.addEventListener('mousemove', (event) => {
+      const p = getPoint(event);
+      hoveredTile = hitTest(p.x, p.y);
+      draw();
+    });
+
+    canvas.addEventListener('mouseleave', () => {
+      hoveredTile = null;
+      draw();
+    });
+
+    canvas.addEventListener('click', (event) => {
+      if (event.button !== 0) return;
+      hideMenu();
+      const p = getPoint(event);
+      const tile = hitTest(p.x, p.y);
+      if (!tile) return;
+      nextState(tile);
+      draw();
+    });
+
+    canvas.addEventListener('contextmenu', (event) => {
+      event.preventDefault();
+      const p = getPoint(event);
+      const tile = hitTest(p.x, p.y);
+      if (!tile) { hideMenu(); return; }
+      contextTile = tile;
+      menu.style.left = `${p.x + 8}px`;
+      menu.style.top = `${p.y + 8}px`;
+      menu.classList.add('open');
+    });
+
+    menu.addEventListener('click', (event) => {
+      const button = event.target.closest('button[data-role]');
+      if (!button || !contextTile) return;
+      assignRole(contextTile, button.dataset.role);
+      hideMenu();
+      draw();
+    });
+
+    window.addEventListener('click', (event) => {
+      if (!menu.contains(event.target)) hideMenu();
+    });
+
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') hideMenu();
+    });
+
+    window.addEventListener('resize', rebuild);
+    preloadImages().then(rebuild);
+  </script>
+</body>
+</html>
