@@ -7,23 +7,29 @@
 <style>
   :root { color-scheme: dark; --bg:#151515; --line:#3a3a3a; --menu:#101010; --menu-hover:#292929; --text:#f1f1f1; }
   * { box-sizing: border-box; }
-  html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: var(--bg); }
-  body { min-height: 100vh; }
-  main { position: relative; width: 100vw; height: 100vh; overflow: hidden; }
-  canvas { display: block; width: 100%; height: 100%; cursor: crosshair; }
-  .menu { position: absolute; min-width: 140px; background: var(--menu); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,.35); padding: 6px; display: none; z-index: 10; }
-  .menu.open { display: block; }
-  .menu button { width: 100%; border: 0; background: transparent; color: var(--text); text-align: left; padding: 10px 12px; border-radius: 8px; cursor: pointer; font: inherit; }
-  .menu button:hover, .menu button:focus-visible { background: var(--menu-hover); outline: none; }
+  html, body { margin:0; width:100%; height:100%; overflow:hidden; background:var(--bg); }
+  body { min-height:100vh; }
+  main { position:relative; width:100vw; height:100vh; overflow:hidden; }
+  canvas { display:block; width:100%; height:100%; cursor:crosshair; }
+  .menu { position:absolute; min-width:180px; background:var(--menu); border:1px solid var(--line); border-radius:10px; box-shadow:0 10px 30px rgba(0,0,0,.35); padding:6px; display:none; z-index:30; }
+  .menu.open { display:block; }
+  .menu button { width:100%; border:0; background:transparent; color:var(--text); text-align:left; padding:10px 12px; border-radius:8px; cursor:pointer; font:inherit; }
+  .menu button:hover, .menu button:focus-visible { background:var(--menu-hover); outline:none; }
+  .menu .sep { height:1px; margin:6px 0; background:var(--line); }
+  .hidden { display:none; }
 </style>
 </head>
 <body>
 <main>
   <canvas id="canvas"></canvas>
+  <input class="hidden" id="fileInput" type="file" accept="application/json,.json,.txt,text/plain" />
   <div class="menu" id="menu">
-    <button type="button" data-role="terrain">Floor/Wall</button>
+    <button type="button" data-role="terrain">Wall</button>
     <button type="button" data-role="door">Door</button>
     <button type="button" data-role="monster">Monster</button>
+    <div class="sep"></div>
+    <button type="button" id="importBtn">Import map</button>
+    <button type="button" id="exportBtn">Export map</button>
   </div>
 </main>
 <script>
@@ -31,175 +37,51 @@
   const canvas = document.getElementById('canvas');
   const ctx = canvas.getContext('2d');
   const menu = document.getElementById('menu');
-  const COLS = 15;
-  const ROWS = 12;
-  const BASE_HEXSIZE = 36;
+  const fileInput = document.getElementById('fileInput');
+  const BASE_HEXSIZE = 44;
+  const COLS = 24;
+  const ROWS = 14;
   const PAD = BASE_HEXSIZE * 0.8;
   const SQRT3 = Math.sqrt(3);
   const ROLE = { TERRAIN: 'terrain', DOOR: 'door', MONSTER: 'monster' };
   const ROLESTATES = { terrain: ['floor', 'wall'], door: ['locked', 'closed', 'open'], monster: ['alive', 'injured', 'dead'] };
   const COLORS = { floor:'#8a8a8a', wall:'#2f2f2f', locked:'#b74444', closed:'#c98a2e', open:'#2a9d6f', alive:'#7c3aed', injured:'#ef4444', dead:'#5b6472' };
-  const IMAGES = {};
-  const IMAGEREADY = {};
-  const IMAGE_SOURCES = {
-    floor: 'images/floor.png',
-    wall: 'images/wall.png',
-    locked: 'images/door_locked.png',
-    closed: 'images/door_closed.png',
-    open: 'images/door_open.png',
-    alive: 'images/monster_alive.png',
-    injured: 'images/monster_injured.png',
-    dead: 'images/monster_dead.png'
-  };
-
-  const state = {
-    hexSize: BASE_HEXSIZE,
-    gridOrigin: { x: 0, y: 0 },
-    tiles: [],
-    tileData: Array.from({ length: ROWS * COLS }, () => ({ role: ROLE.TERRAIN, state: ROLESTATES.terrain[0] })),
-    hoveredTile: null,
-    contextTile: null,
-    dpr: window.devicePixelRatio || 1,
-  };
-
+  const IMAGE_SOURCES = { floor:'images/floor.png', wall:'images/wall.png', locked:'images/door_locked.png', closed:'images/door_closed.png', open:'images/door_open.png', alive:'images/monster_alive.png', injured:'images/monster_injured.png', dead:'images/monster_dead.png' };
+  const IMAGES = {}, IMAGEREADY = {};
+  const state = { dpr: window.devicePixelRatio || 1, hoveredTile: null, contextTile: null, tiles: [], tileData: Array.from({ length: ROWS * COLS }, () => ({ role: ROLE.TERRAIN, state: ROLESTATES.terrain[0] })), gridOrigin: { x: 0, y: 0 }, hexSize: BASE_HEXSIZE };
   const rect = () => canvas.getBoundingClientRect();
-  const cssSize = () => ({ width: rect().width, height: rect().height });
-  const syncTile = (tile) => { state.tileData[tile.r * COLS + tile.q] = { role: tile.role, state: tile.state }; };
-
-  function resizeCanvas() {
-    const r = rect();
-    state.dpr = window.devicePixelRatio || 1;
-    canvas.width = Math.round(r.width * state.dpr);
-    canvas.height = Math.round(r.height * state.dpr);
-    ctx.setTransform(state.dpr, 0, 0, state.dpr, 0, 0);
-  }
-
-  function fitGridToCanvas() {
-    const r = rect();
-    const sizeW = (r.width - PAD * 2) / ((COLS + 0.5) * SQRT3);
-    const sizeH = (r.height - PAD * 2) / ((ROWS * 1.5) + 0.5);
-    state.hexSize = Math.max(4, Math.min(BASE_HEXSIZE, sizeW, sizeH));
-    const hexW = SQRT3 * state.hexSize;
-    const gridWidth = (COLS - 1) * hexW + hexW;
-    const gridHeight = (ROWS - 1) * state.hexSize * 1.5 + 2 * state.hexSize;
-    state.gridOrigin = {
-      x: (r.width - gridWidth) / 2 + hexW / 2,
-      y: (r.height - gridHeight) / 2 + state.hexSize,
-    };
-  }
-
-  function hexToPixel(q, r) {
-    return {
-      x: state.gridOrigin.x + q * SQRT3 * state.hexSize + (r % 2) * SQRT3 * state.hexSize / 2,
-      y: state.gridOrigin.y + r * state.hexSize * 1.5,
-    };
-  }
-
-  function buildGrid() {
-    state.tiles = [];
-    for (let r = 0; r < ROWS; r++) {
-      for (let q = 0; q < COLS; q++) {
-        const idx = r * COLS + q;
-        const p = hexToPixel(q, r);
-        const data = state.tileData[idx];
-        state.tiles.push({ q, r, x: p.x, y: p.y, role: data.role, state: data.state });
-      }
-    }
-  }
-
-  function hexCorners(cx, cy, size) {
-    return Array.from({ length: 6 }, (_, i) => {
-      const a = Math.PI / 180 * (60 * i - 30);
-      return [cx + size * Math.cos(a), cy + size * Math.sin(a)];
-    });
-  }
-
-  function pointInHex(x, y, tile) {
-    const pts = hexCorners(tile.x, tile.y, state.hexSize - 1);
-    let inside = false;
-    for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
-      const [xi, yi] = pts[i];
-      const [xj, yj] = pts[j];
-      const hit = ((yi > y) !== (yj > y)) && (x < ((xj - xi) * (y - yi)) / ((yj - yi) || 1e-9) + xi);
-      if (hit) inside = !inside;
-    }
-    return inside;
-  }
-
-  function hitTest(x, y) { return [...state.tiles].reverse().find(tile => pointInHex(x, y, tile)) || null; }
+  function resizeCanvas() { const r = rect(); state.dpr = window.devicePixelRatio || 1; canvas.width = Math.round(r.width * state.dpr); canvas.height = Math.round(r.height * state.dpr); ctx.setTransform(state.dpr, 0, 0, state.dpr, 0, 0); }
+  function fitGridToCanvas() { const r = rect(); const sizeW = (r.width - PAD * 2) / ((COLS + 0.5) * SQRT3); const sizeH = (r.height - PAD * 2) / ((ROWS * 1.5) + 0.5); state.hexSize = Math.max(4, Math.min(BASE_HEXSIZE, sizeW, sizeH)); const hexW = SQRT3 * state.hexSize; const gridWidth = (COLS - 1) * hexW + hexW; const gridHeight = (ROWS - 1) * state.hexSize * 1.5 + 2 * state.hexSize; state.gridOrigin = { x: (r.width - gridWidth) / 2 + hexW / 2, y: (r.height - gridHeight) / 2 + state.hexSize }; }
+  function hexToPixel(q, r) { return { x: state.gridOrigin.x + q * SQRT3 * state.hexSize + (r % 2) * SQRT3 * state.hexSize / 2, y: state.gridOrigin.y + r * state.hexSize * 1.5 }; }
+  function buildGrid() { state.tiles = []; for (let r = 0; r < ROWS; r++) for (let q = 0; q < COLS; q++) { const idx = r * COLS + q; const p = hexToPixel(q, r); const d = state.tileData[idx]; state.tiles.push({ q, r, x: p.x, y: p.y, role: d.role, state: d.state }); } }
+  function hexCorners(cx, cy, size) { const pts = []; for (let i = 0; i < 6; i++) { const a = Math.PI / 180 * (60 * i - 30); pts.push([cx + size * Math.cos(a), cy + size * Math.sin(a)]); } return pts; }
+  function pointInHex(x, y, tile) { const pts = hexCorners(tile.x, tile.y, state.hexSize - 1); let inside = false; for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) { const [xi, yi] = pts[i]; const [xj, yj] = pts[j]; const hit = ((yi > y) !== (yj > y)) && (x < ((xj - xi) * (y - yi)) / ((yj - yi) || 1e-9) + xi); if (hit) inside = !inside; } return inside; }
+  function hitTest(x, y) { for (let i = state.tiles.length - 1; i >= 0; i--) if (pointInHex(x, y, state.tiles[i])) return state.tiles[i]; return null; }
   function getPoint(e) { const r = rect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
-  function drawHexPath(tile) { const pts = hexCorners(tile.x, tile.y, state.hexSize - 1); ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath(); }
-
-  function drawTile(tile) {
-    drawHexPath(tile);
-    const img = IMAGES[tile.state];
-    if (img && IMAGEREADY[tile.state]) {
-      ctx.save();
-      ctx.clip();
-      ctx.drawImage(img, tile.x - state.hexSize, tile.y - state.hexSize, state.hexSize * 2, state.hexSize * 2);
-      ctx.restore();
-    } else {
-      ctx.fillStyle = COLORS[tile.state];
-      ctx.fill();
-    }
-    ctx.strokeStyle = '#2d2d2d';
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-    if (tile === state.hoveredTile) {
-      drawHexPath(tile);
-      ctx.strokeStyle = '#6aa9ff';
-      ctx.lineWidth = 3;
-      ctx.stroke();
-    }
-  }
-
-  function draw() {
-    const r = cssSize();
-    ctx.clearRect(0, 0, r.width, r.height);
-    state.tiles.forEach(drawTile);
-  }
-
-  function rebuild() { resizeCanvas(); fitGridToCanvas(); buildGrid(); draw(); }
-  function hideMenu() { menu.classList.remove('open'); state.contextTile = null; }
+  function syncTile(tile) { state.tileData[tile.r * COLS + tile.q] = { role: tile.role, state: tile.state }; }
   function nextState(tile) { const states = ROLESTATES[tile.role]; tile.state = states[(states.indexOf(tile.state) + 1) % states.length]; syncTile(tile); }
   function assignRole(tile, role) { tile.role = role; tile.state = ROLESTATES[role][0]; syncTile(tile); }
-
-  function preloadImages() {
-    return Promise.all(Object.entries(IMAGE_SOURCES).map(([stateName, src]) => new Promise(resolve => {
-      const img = new Image();
-      IMAGES[stateName] = img;
-      IMAGEREADY[stateName] = false;
-      img.onload = () => { IMAGEREADY[stateName] = true; resolve(); };
-      img.onerror = () => { IMAGEREADY[stateName] = false; resolve(); };
-      img.src = src;
-    })));
-  }
-
-  canvas.addEventListener('mousemove', e => { state.hoveredTile = hitTest(...Object.values(getPoint(e))); draw(); });
+  function drawHexPath(tile) { const pts = hexCorners(tile.x, tile.y, state.hexSize - 1); ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath(); }
+  function drawTile(tile) { drawHexPath(tile); const img = IMAGES[tile.state]; if (img && IMAGEREADY[tile.state]) { ctx.save(); ctx.clip(); ctx.drawImage(img, tile.x - state.hexSize, tile.y - state.hexSize, state.hexSize * 2, state.hexSize * 2); ctx.restore(); } else { ctx.fillStyle = COLORS[tile.state]; ctx.fill(); } ctx.strokeStyle = '#2d2d2d'; ctx.lineWidth = 1.5; ctx.stroke(); if (tile === state.hoveredTile) { drawHexPath(tile); ctx.strokeStyle = '#6aa9ff'; ctx.lineWidth = 3; ctx.stroke(); } }
+  function draw() { const r = rect(); ctx.clearRect(0, 0, r.width, r.height); state.tiles.forEach(drawTile); }
+  function rebuild() { resizeCanvas(); fitGridToCanvas(); buildGrid(); draw(); }
+  function hideMenu() { menu.classList.remove('open'); state.contextTile = null; }
+  function loadImages() { return Promise.all(Object.entries(IMAGE_SOURCES).map(([key, src]) => new Promise(resolve => { const img = new Image(); IMAGES[key] = img; IMAGEREADY[key] = false; img.onload = () => { IMAGEREADY[key] = true; resolve(); }; img.onerror = () => { IMAGEREADY[key] = false; resolve(); }; img.src = src; }))); }
+  function exportMap() { const payload = { version: 1, rows: ROWS, cols: COLS, tiles: state.tileData }; const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'dungeon1.json'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 0); }
+  function updateURLForMapName(name) { const url = new URL(window.location.href); url.searchParams.set('map', name); window.history.replaceState({}, '', url.toString()); }
+  function mapNameFromFile(fileName) { return fileName.replace(/\.(json|txt)$/i, '').replace(/[^a-zA-Z0-9_-]/g, ''); }
+  async function importMapFile(file) { const text = await file.text(); const data = JSON.parse(text); if (!data || !Array.isArray(data.tiles)) throw new Error('Invalid map file'); state.tileData = data.tiles.map(t => ({ role: t.role || ROLE.TERRAIN, state: t.state || ROLESTATES.terrain[0] })); buildGrid(); draw(); const name = mapNameFromFile(file.name); if (name) updateURLForMapName(name); }
+  async function loadMapFromURL() { const map = new URLSearchParams(window.location.search).get('map'); if (!map) return; const candidates = [`maps/${map}.json`, `${map}.json`]; for (const src of candidates) { try { const res = await fetch(src, { cache: 'no-store' }); if (!res.ok) continue; const data = await res.json(); if (data && Array.isArray(data.tiles)) { state.tileData = data.tiles.map(t => ({ role: t.role || ROLE.TERRAIN, state: t.state || ROLESTATES.terrain[0] })); buildGrid(); draw(); return; } } catch (_) {} } }
+  canvas.addEventListener('mousemove', e => { const p = getPoint(e); state.hoveredTile = hitTest(p.x, p.y); draw(); });
   canvas.addEventListener('mouseleave', () => { state.hoveredTile = null; draw(); });
-  canvas.addEventListener('click', e => { if (e.button !== 0) return; hideMenu(); const tile = hitTest(...Object.values(getPoint(e))); if (!tile) return; nextState(tile); draw(); });
-  canvas.addEventListener('contextmenu', e => {
-    e.preventDefault();
-    const p = getPoint(e);
-    const tile = hitTest(p.x, p.y);
-    if (!tile) return hideMenu();
-    state.contextTile = tile;
-    menu.style.left = `${p.x + 8}px`;
-    menu.style.top = `${p.y + 8}px`;
-    menu.classList.add('open');
-  });
-  menu.addEventListener('click', e => {
-    const button = e.target.closest('button[data-role]');
-    if (!button || !state.contextTile) return;
-    assignRole(state.contextTile, button.dataset.role);
-    hideMenu();
-    draw();
-  });
+  canvas.addEventListener('click', e => { if (e.button !== 0) return; hideMenu(); const p = getPoint(e); const tile = hitTest(p.x, p.y); if (!tile) return; nextState(tile); draw(); });
+  canvas.addEventListener('contextmenu', e => { e.preventDefault(); const p = getPoint(e); const tile = hitTest(p.x, p.y); if (!tile) return hideMenu(); state.contextTile = tile; menu.style.left = `${p.x + 8}px`; menu.style.top = `${p.y + 8}px`; menu.classList.add('open'); });
+  menu.addEventListener('click', e => { const button = e.target.closest('button'); if (!button) return; if (button.id === 'importBtn') { fileInput.value = ''; fileInput.click(); return; } if (button.id === 'exportBtn') { hideMenu(); exportMap(); return; } const role = button.dataset.role; if (!role || !state.contextTile) return; assignRole(state.contextTile, role); hideMenu(); draw(); });
+  fileInput.addEventListener('change', async () => { const file = fileInput.files && fileInput.files[0]; if (!file) return; try { await importMapFile(file); } catch (err) { alert(err.message || 'Failed to import map'); } });
   window.addEventListener('click', e => { if (!menu.contains(e.target)) hideMenu(); });
   window.addEventListener('keydown', e => { if (e.key === 'Escape') hideMenu(); });
   window.addEventListener('resize', rebuild);
-
-  preloadImages().then(() => { resizeCanvas(); fitGridToCanvas(); buildGrid(); draw(); });
+  loadImages().then(async () => { resizeCanvas(); fitGridToCanvas(); buildGrid(); await loadMapFromURL(); draw(); });
 })();
 </script>
 </body>
