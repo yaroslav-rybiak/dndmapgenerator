@@ -1,0 +1,107 @@
+{
+  "version": 1,
+  "rows": 5,
+  "cols": 5,
+  "tiles": [
+    {
+      "role": "terrain",
+      "state": "wall"
+    },
+    {
+      "role": "terrain",
+      "state": "wall"
+    },
+    {
+      "role": "terrain",
+      "state": "wall"
+    },
+    {
+      "role": "terrain",
+      "state": "wall"
+    },
+    {
+      "role": "terrain",
+      "state": "wall"
+    },
+    {
+      "role": "terrain",
+      "state": "wall"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "wall"
+    },
+    {
+      "role": "door",
+      "state": "locked"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "monster",
+      "state": "alive"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "wall"
+    },
+    {
+      "role": "terrain",
+      "state": "wall"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "wall"
+    },
+    {
+      "role": "terrain",
+      "state": "wall"
+    },
+    {
+      "role": "terrain",
+      "state": "wall"
+    },
+    {
+      "role": "terrain",
+      "state": "wall"
+    },
+    {
+      "role": "terrain",
+      "state": "wall"
+    },
+    {
+      "role": "terrain",
+      "state": "wall"
+    }
+  ]
+}
