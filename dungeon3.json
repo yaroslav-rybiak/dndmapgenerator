@@ -5,147 +5,103 @@
   "tiles": [
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_torch"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_torch"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
@@ -189,15 +145,7 @@
     },
     {
       "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "wall"
-    },
-    {
-      "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
@@ -241,7 +189,15 @@
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "wall_empty"
+    },
+    {
+      "role": "terrain",
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
@@ -265,7 +221,27 @@
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
@@ -289,11 +265,35 @@
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "wall_empty"
+    },
+    {
+      "role": "terrain",
+      "state": "wall_torch"
     },
     {
       "role": "terrain",
@@ -357,7 +357,7 @@
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "monster",
@@ -385,107 +385,11 @@
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_torch"
     },
     {
       "role": "terrain",
-      "state": "wall"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "wall"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "wall"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "wall"
-    },
-    {
-      "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
@@ -529,7 +433,103 @@
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "wall_empty"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "wall_empty"
+    },
+    {
+      "role": "terrain",
+      "state": "wall_empty"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
@@ -577,15 +577,11 @@
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
@@ -625,7 +621,11 @@
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
@@ -637,27 +637,11 @@
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
@@ -673,27 +657,43 @@
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "floor"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "floor"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "floor"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "floor"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
+    },
+    {
+      "role": "terrain",
+      "state": "wall_empty"
+    },
+    {
+      "role": "terrain",
+      "state": "wall_empty"
+    },
+    {
+      "role": "terrain",
+      "state": "wall_empty"
+    },
+    {
+      "role": "terrain",
+      "state": "wall_empty"
     },
     {
       "role": "door",
@@ -701,27 +701,27 @@
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
@@ -729,7 +729,7 @@
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "monster",
@@ -769,55 +769,11 @@
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
@@ -861,15 +817,59 @@
     },
     {
       "role": "terrain",
+      "state": "wall_empty"
+    },
+    {
+      "role": "terrain",
       "state": "floor"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "floor"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "wall_empty"
+    },
+    {
+      "role": "terrain",
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
@@ -913,7 +913,7 @@
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
@@ -961,55 +961,11 @@
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_torch"
     },
     {
       "role": "terrain",
-      "state": "wall"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
@@ -1053,11 +1009,55 @@
     },
     {
       "role": "terrain",
+      "state": "wall_torch"
+    },
+    {
+      "role": "terrain",
       "state": "floor"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "floor"
+    },
+    {
+      "role": "terrain",
+      "state": "wall_empty"
     },
     {
       "role": "door",
@@ -1105,7 +1105,7 @@
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
@@ -1153,55 +1153,11 @@
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
@@ -1245,107 +1201,151 @@
     },
     {
       "role": "terrain",
+      "state": "wall_empty"
+    },
+    {
+      "role": "terrain",
       "state": "floor"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "floor"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "floor"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "floor"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "floor"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "floor"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "floor"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "floor"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "floor"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "floor"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "floor"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_torch"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
     },
     {
       "role": "terrain",
-      "state": "wall"
+      "state": "wall_empty"
+    },
+    {
+      "role": "terrain",
+      "state": "wall_empty"
+    },
+    {
+      "role": "terrain",
+      "state": "wall_empty"
+    },
+    {
+      "role": "terrain",
+      "state": "wall_empty"
+    },
+    {
+      "role": "terrain",
+      "state": "wall_empty"
+    },
+    {
+      "role": "terrain",
+      "state": "wall_empty"
+    },
+    {
+      "role": "terrain",
+      "state": "wall_torch"
+    },
+    {
+      "role": "terrain",
+      "state": "wall_empty"
+    },
+    {
+      "role": "terrain",
+      "state": "wall_empty"
+    },
+    {
+      "role": "terrain",
+      "state": "wall_empty"
+    },
+    {
+      "role": "terrain",
+      "state": "wall_empty"
     }
   ]
 }
