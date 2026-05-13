@@ -42,9 +42,9 @@
   const PAD = BASE_HEXSIZE * 0.8;
   const SQRT3 = Math.sqrt(3);
   const ROLE = { TERRAIN: 'terrain', DOOR: 'door', MONSTER: 'monster' };
-  const ROLESTATES = { terrain: ['floor', 'wall'], door: ['locked', 'closed', 'open'], monster: ['alive', 'injured', 'dead'] };
+  const ROLESTATES = { terrain: ['floor', 'wall_empty', 'wall_torch'], door: ['locked', 'closed', 'open'], monster: ['alive', 'injured', 'dead'] };
   const COLORS = { floor:'#8a8a8a', wall:'#2f2f2f', locked:'#b74444', closed:'#c98a2e', open:'#2a9d6f', alive:'#7c3aed', injured:'#ef4444', dead:'#5b6472' };
-  const IMAGE_SOURCES = { floor:'images/floor.png', wall:'images/wall.png', locked:'images/door_locked.png', closed:'images/door_closed.png', open:'images/door_open.png', alive:'images/monster_alive.png', injured:'images/monster_injured.png', dead:'images/monster_dead.png' };
+  const IMAGE_SOURCES = { floor:'images/floor.png', wall_empty:'images/wall_empty.png', wall_torch:'images/wall_torch.png', locked:'images/door_locked.png', closed:'images/door_closed.png', open:'images/door_open.png', alive:'images/monster_alive.png', injured:'images/monster_injured.png', dead:'images/monster_dead.png' };
   const IMAGES = {}, IMAGEREADY = {};
   const state = { dpr: window.devicePixelRatio || 1, hoveredTile: null, contextTile: null, tiles: [], tileData: [], rows: 0, cols: 0, gridOrigin: { x: 0, y: 0 }, hexSize: BASE_HEXSIZE };
   const rect = () => canvas.getBoundingClientRect();
