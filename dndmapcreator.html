@@ -24,7 +24,7 @@
   <canvas id="canvas"></canvas>
   <input class="hidden" id="fileInput" type="file" accept="application/json,.json,.txt,text/plain" />
   <div class="menu" id="menu">
-    <button type="button" data-role="terrain">Terrain</button>
+    <button type="button" data-role="terrain">Wall</button>
     <button type="button" data-role="door">Door</button>
     <button type="button" data-role="monster">Monster</button>
     <div class="sep"></div>
@@ -39,8 +39,6 @@
   const menu = document.getElementById('menu');
   const fileInput = document.getElementById('fileInput');
   const BASE_HEXSIZE = 44;
-  const COLS = 24;
-  const ROWS = 14;
   const PAD = BASE_HEXSIZE * 0.8;
   const SQRT3 = Math.sqrt(3);
   const ROLE = { TERRAIN: 'terrain', DOOR: 'door', MONSTER: 'monster' };
@@ -48,17 +46,17 @@
   const COLORS = { floor:'#8a8a8a', wall:'#2f2f2f', locked:'#b74444', closed:'#c98a2e', open:'#2a9d6f', alive:'#7c3aed', injured:'#ef4444', dead:'#5b6472' };
   const IMAGE_SOURCES = { floor:'images/floor.png', wall:'images/wall.png', locked:'images/door_locked.png', closed:'images/door_closed.png', open:'images/door_open.png', alive:'images/monster_alive.png', injured:'images/monster_injured.png', dead:'images/monster_dead.png' };
   const IMAGES = {}, IMAGEREADY = {};
-  const state = { dpr: window.devicePixelRatio || 1, hoveredTile: null, contextTile: null, tiles: [], tileData: Array.from({ length: ROWS * COLS }, () => ({ role: ROLE.TERRAIN, state: ROLESTATES.terrain[0] })), gridOrigin: { x: 0, y: 0 }, hexSize: BASE_HEXSIZE };
+  const state = { dpr: window.devicePixelRatio || 1, hoveredTile: null, contextTile: null, tiles: [], tileData: [], rows: 0, cols: 0, gridOrigin: { x: 0, y: 0 }, hexSize: BASE_HEXSIZE };
   const rect = () => canvas.getBoundingClientRect();
   function resizeCanvas() { const r = rect(); state.dpr = window.devicePixelRatio || 1; canvas.width = Math.round(r.width * state.dpr); canvas.height = Math.round(r.height * state.dpr); ctx.setTransform(state.dpr, 0, 0, state.dpr, 0, 0); }
-  function fitGridToCanvas() { const r = rect(); const sizeW = (r.width - PAD * 2) / ((COLS + 0.5) * SQRT3); const sizeH = (r.height - PAD * 2) / ((ROWS * 1.5) + 0.5); state.hexSize = Math.max(4, Math.min(BASE_HEXSIZE, sizeW, sizeH)); const hexW = SQRT3 * state.hexSize; const gridWidth = (COLS - 1) * hexW + hexW; const gridHeight = (ROWS - 1) * state.hexSize * 1.5 + 2 * state.hexSize; state.gridOrigin = { x: (r.width - gridWidth) / 2 + hexW / 2, y: (r.height - gridHeight) / 2 + state.hexSize }; }
+  function fitGridToCanvas() { const r = rect(); const cols = Math.max(1, state.cols || 1); const rows = Math.max(1, state.rows || 1); const sizeW = (r.width - PAD * 2) / ((cols + 0.5) * SQRT3); const sizeH = (r.height - PAD * 2) / ((rows * 1.5) + 0.5); state.hexSize = Math.max(4, Math.min(BASE_HEXSIZE, sizeW, sizeH)); const hexW = SQRT3 * state.hexSize; const gridWidth = (cols - 1) * hexW + hexW; const gridHeight = (rows - 1) * state.hexSize * 1.5 + 2 * state.hexSize; state.gridOrigin = { x: (r.width - gridWidth) / 2 + hexW / 2, y: (r.height - gridHeight) / 2 + state.hexSize }; }
   function hexToPixel(q, r) { return { x: state.gridOrigin.x + q * SQRT3 * state.hexSize + (r % 2) * SQRT3 * state.hexSize / 2, y: state.gridOrigin.y + r * state.hexSize * 1.5 }; }
-  function buildGrid() { state.tiles = []; for (let r = 0; r < ROWS; r++) for (let q = 0; q < COLS; q++) { const idx = r * COLS + q; const p = hexToPixel(q, r); const d = state.tileData[idx]; state.tiles.push({ q, r, x: p.x, y: p.y, role: d.role, state: d.state }); } }
+  function buildGrid() { state.tiles = []; for (let r = 0; r < state.rows; r++) for (let q = 0; q < state.cols; q++) { const idx = r * state.cols + q; const p = hexToPixel(q, r); const d = state.tileData[idx] || { role: ROLE.TERRAIN, state: ROLESTATES.terrain[0] }; state.tiles.push({ q, r, x: p.x, y: p.y, role: d.role, state: d.state }); } }
   function hexCorners(cx, cy, size) { const pts = []; for (let i = 0; i < 6; i++) { const a = Math.PI / 180 * (60 * i - 30); pts.push([cx + size * Math.cos(a), cy + size * Math.sin(a)]); } return pts; }
   function pointInHex(x, y, tile) { const pts = hexCorners(tile.x, tile.y, state.hexSize - 1); let inside = false; for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) { const [xi, yi] = pts[i]; const [xj, yj] = pts[j]; const hit = ((yi > y) !== (yj > y)) && (x < ((xj - xi) * (y - yi)) / ((yj - yi) || 1e-9) + xi); if (hit) inside = !inside; } return inside; }
   function hitTest(x, y) { for (let i = state.tiles.length - 1; i >= 0; i--) if (pointInHex(x, y, state.tiles[i])) return state.tiles[i]; return null; }
   function getPoint(e) { const r = rect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
-  function syncTile(tile) { state.tileData[tile.r * COLS + tile.q] = { role: tile.role, state: tile.state }; }
+  function syncTile(tile) { state.tileData[tile.r * state.cols + tile.q] = { role: tile.role, state: tile.state }; }
   function nextState(tile) { const states = ROLESTATES[tile.role]; tile.state = states[(states.indexOf(tile.state) + 1) % states.length]; syncTile(tile); }
   function assignRole(tile, role) { tile.role = role; tile.state = ROLESTATES[role][0]; syncTile(tile); }
   function drawHexPath(tile) { const pts = hexCorners(tile.x, tile.y, state.hexSize - 1); ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath(); }
@@ -67,11 +65,13 @@
   function rebuild() { resizeCanvas(); fitGridToCanvas(); buildGrid(); draw(); }
   function hideMenu() { menu.classList.remove('open'); state.contextTile = null; }
   function loadImages() { return Promise.all(Object.entries(IMAGE_SOURCES).map(([key, src]) => new Promise(resolve => { const img = new Image(); IMAGES[key] = img; IMAGEREADY[key] = false; img.onload = () => { IMAGEREADY[key] = true; resolve(); }; img.onerror = () => { IMAGEREADY[key] = false; resolve(); }; img.src = src; }))); }
-  function exportMap() { const payload = { version: 1, rows: ROWS, cols: COLS, tiles: state.tileData }; const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'dungeon1.json'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 0); }
+  function exportMap() { const payload = { version: 1, rows: state.rows, cols: state.cols, tiles: state.tileData }; const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'map.json'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 0); }
   function updateURLForMapName(name) { const url = new URL(window.location.href); url.searchParams.set('map', name); window.history.replaceState({}, '', url.toString()); }
   function mapNameFromFile(fileName) { return fileName.replace(/\.(json|txt)$/i, '').replace(/[^a-zA-Z0-9_-]/g, ''); }
-  async function importMapFile(file) { const text = await file.text(); const data = JSON.parse(text); if (!data || !Array.isArray(data.tiles)) throw new Error('Invalid map file'); state.tileData = data.tiles.map(t => ({ role: t.role || ROLE.TERRAIN, state: t.state || ROLESTATES.terrain[0] })); buildGrid(); draw(); const name = mapNameFromFile(file.name); if (name) updateURLForMapName(name); }
-  async function loadMapFromURL() { const map = new URLSearchParams(window.location.search).get('map'); if (!map) return; const candidates = [`maps/${map}.json`, `${map}.json`]; for (const src of candidates) { try { const res = await fetch(src, { cache: 'no-store' }); if (!res.ok) continue; const data = await res.json(); if (data && Array.isArray(data.tiles)) { state.tileData = data.tiles.map(t => ({ role: t.role || ROLE.TERRAIN, state: t.state || ROLESTATES.terrain[0] })); buildGrid(); draw(); return; } } catch (_) {} } }
+  function makeDefaultData(rows, cols) { return Array.from({ length: rows * cols }, () => ({ role: ROLE.TERRAIN, state: ROLESTATES.terrain[0] })); }
+  function normalizeMapData(data) { const rows = Math.max(1, parseInt(data.rows, 10) || 0); const cols = Math.max(1, parseInt(data.cols, 10) || 0); const srcTiles = Array.isArray(data.tiles) ? data.tiles : []; const tiles = Array.from({ length: rows * cols }, (_, i) => { const t = srcTiles[i] || {}; return { role: t.role || ROLE.TERRAIN, state: t.state || ROLESTATES.terrain[0] }; }); return { rows, cols, tiles }; }
+  async function importMapFile(file) { const text = await file.text(); const data = JSON.parse(text); if (!data || !Array.isArray(data.tiles)) throw new Error('Invalid map file'); const norm = normalizeMapData(data); state.rows = norm.rows; state.cols = norm.cols; state.tileData = norm.tiles; state.hoveredTile = null; buildGrid(); draw(); const name = mapNameFromFile(file.name); if (name) updateURLForMapName(name); }
+  async function loadMapFromURL() { const map = new URLSearchParams(window.location.search).get('map'); if (!map) return false; const candidates = [`maps/${map}.json`, `${map}.json`]; for (const src of candidates) { try { const res = await fetch(src, { cache: 'no-store' }); if (!res.ok) continue; const data = await res.json(); if (data && Array.isArray(data.tiles)) { const norm = normalizeMapData(data); state.rows = norm.rows; state.cols = norm.cols; state.tileData = norm.tiles; state.hoveredTile = null; buildGrid(); draw(); return true; } } catch (_) {} } return false; }
   canvas.addEventListener('mousemove', e => { const p = getPoint(e); state.hoveredTile = hitTest(p.x, p.y); draw(); });
   canvas.addEventListener('mouseleave', () => { state.hoveredTile = null; draw(); });
   canvas.addEventListener('click', e => { if (e.button !== 0) return; hideMenu(); const p = getPoint(e); const tile = hitTest(p.x, p.y); if (!tile) return; nextState(tile); draw(); });
@@ -81,7 +81,18 @@
   window.addEventListener('click', e => { if (!menu.contains(e.target)) hideMenu(); });
   window.addEventListener('keydown', e => { if (e.key === 'Escape') hideMenu(); });
   window.addEventListener('resize', rebuild);
-  loadImages().then(async () => { resizeCanvas(); fitGridToCanvas(); buildGrid(); await loadMapFromURL(); draw(); });
+  loadImages().then(async () => {
+    resizeCanvas();
+    const loaded = await loadMapFromURL();
+    if (!loaded && state.rows === 0) {
+      state.rows = 14;
+      state.cols = 24;
+      state.tileData = makeDefaultData(state.rows, state.cols);
+    }
+    fitGridToCanvas();
+    buildGrid();
+    draw();
+  });
 })();
 </script>
 </body>
