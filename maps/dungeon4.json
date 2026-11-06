@@ -1,107 +1,91 @@
 {
-  "version": 1,
-  "rows": 5,
-  "cols": 5,
-  "tiles": [
-    {
-      "role": "terrain",
-      "state": "wall_empty"
-    },
-    {
-      "role": "terrain",
-      "state": "wall_empty"
-    },
-    {
-      "role": "terrain",
-      "state": "wall_empty"
-    },
-    {
-      "role": "terrain",
-      "state": "wall_empty"
-    },
-    {
-      "role": "terrain",
-      "state": "wall_empty"
-    },
-    {
-      "role": "terrain",
-      "state": "wall_empty"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "wall_empty"
-    },
-    {
-      "role": "door",
-      "state": "closed"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "monster",
-      "state": "alive"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "wall_torch"
-    },
-    {
-      "role": "terrain",
-      "state": "wall_empty"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "floor"
-    },
-    {
-      "role": "terrain",
-      "state": "wall_empty"
-    },
-    {
-      "role": "terrain",
-      "state": "wall_empty"
-    },
-    {
-      "role": "terrain",
-      "state": "wall_empty"
-    },
-    {
-      "role": "terrain",
-      "state": "wall_empty"
-    },
-    {
-      "role": "terrain",
-      "state": "wall_empty"
-    },
-    {
-      "role": "terrain",
-      "state": "wall_empty"
-    }
-  ]
+ "version": 2,
+ "name": "dungeon4",
+ "rows": 5,
+ "cols": 5,
+ "cells": [
+  {
+   "terrain": "wall"
+  },
+  {
+   "terrain": "wall"
+  },
+  {
+   "terrain": "wall"
+  },
+  {
+   "terrain": "wall"
+  },
+  {
+   "terrain": "wall"
+  },
+  {
+   "terrain": "wall"
+  },
+  {
+   "terrain": "floor"
+  },
+  {
+   "terrain": "floor"
+  },
+  {
+   "terrain": "floor"
+  },
+  {
+   "terrain": "wall"
+  },
+  {
+   "terrain": "floor",
+   "object": {
+    "type": "door",
+    "state": "closed"
+   }
+  },
+  {
+   "terrain": "floor"
+  },
+  {
+   "terrain": "floor",
+   "token": {
+    "type": "monster",
+    "state": "alive"
+   }
+  },
+  {
+   "terrain": "floor"
+  },
+  {
+   "terrain": "wall_torch"
+  },
+  {
+   "terrain": "wall"
+  },
+  {
+   "terrain": "floor"
+  },
+  {
+   "terrain": "floor"
+  },
+  {
+   "terrain": "floor"
+  },
+  {
+   "terrain": "wall"
+  },
+  {
+   "terrain": "wall"
+  },
+  {
+   "terrain": "wall"
+  },
+  {
+   "terrain": "wall"
+  },
+  {
+   "terrain": "wall"
+  },
+  {
+   "terrain": "wall"
+  }
+ ]
 }

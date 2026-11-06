@@ -1,0 +1,93 @@
+:root {
+  color-scheme: dark;
+  --bg: #151515;
+  --line: #3a3a3a;
+  --panel: #101010;
+  --panel-hover: #292929;
+  --text: #f1f1f1;
+  --muted: #8d8d8d;
+  --accent: #6aa9ff;
+  --danger: #e05252;
+  --radius: 10px;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: var(--bg); color: var(--text); }
+main { position: relative; width: 100vw; height: 100vh; overflow: hidden; }
+canvas { display: block; width: 100%; height: 100%; cursor: crosshair; }
+body.play canvas { cursor: default; }
+.hidden { display: none; }
+
+/* Corner badge: map name + unsaved dot. Hidden in play mode so the table only sees the map. */
+.badge {
+  position: absolute; left: 12px; top: 10px; z-index: 20;
+  display: flex; align-items: center; gap: 8px;
+  padding: 5px 11px; border-radius: 999px;
+  background: rgba(16, 16, 16, 0.75); border: 1px solid var(--line);
+  font-size: 13px; letter-spacing: 0.01em; pointer-events: none; opacity: 0.85;
+}
+.badge .dot { width: 8px; height: 8px; border-radius: 50%; background: transparent; }
+.badge.dirty .dot { background: var(--accent); }
+body.play .badge { display: none; }
+
+.toast {
+  position: absolute; left: 50%; bottom: 24px; transform: translate(-50%, 16px);
+  z-index: 40; padding: 9px 14px; border-radius: 8px;
+  background: rgba(16, 16, 16, 0.92); border: 1px solid var(--line); box-shadow: var(--shadow);
+  font-size: 14px; opacity: 0; transition: opacity 0.18s, transform 0.18s; pointer-events: none; max-width: 70vw;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+.toast[data-kind="error"] { border-color: var(--danger); }
+
+/* Context menu */
+.menu {
+  position: absolute; min-width: 210px; z-index: 30; display: none;
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 6px; font-size: 14px; user-select: none;
+}
+.menu.open { display: block; }
+.menu .menu-head { padding: 6px 12px 8px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.menu .sep { height: 1px; margin: 6px 0; background: var(--line); }
+.menu .item {
+  position: relative; display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  width: 100%; border: 0; background: transparent; color: var(--text); text-align: left;
+  padding: 8px 12px; border-radius: 8px; cursor: pointer; font: inherit; outline: none;
+}
+.menu .item:hover, .menu .item:focus-visible, .menu .has-sub.open { background: var(--panel-hover); }
+.menu .item:disabled, .menu .item.disabled { color: var(--muted); cursor: default; }
+.menu .item:disabled:hover, .menu .item.disabled:hover { background: transparent; }
+.menu .item .hint { color: var(--muted); font-size: 12px; }
+.menu .item .chev { color: var(--muted); }
+.menu .item[aria-checked="true"] .label::before { content: "• "; color: var(--accent); }
+.menu .item[role="menuitemcheckbox"][aria-checked="true"] .label::before { content: "✓ "; }
+.menu .sub {
+  display: none; position: absolute; left: 100%; top: -7px; min-width: 190px;
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 6px; margin-left: 2px;
+}
+.menu .sub.flip { left: auto; right: 100%; margin-left: 0; margin-right: 2px; }
+.menu .has-sub.open > .sub { display: block; }
+.menu .has-sub.disabled > .sub { display: none; }
+.menu .menu-note { padding: 8px 12px; color: var(--muted); font-size: 13px; max-width: 260px; }
+
+/* Dialogs */
+.dialog { border: 1px solid var(--line); border-radius: 12px; background: var(--panel); color: var(--text); padding: 0; min-width: 320px; box-shadow: var(--shadow); }
+.dialog::backdrop { background: rgba(0, 0, 0, 0.55); }
+.dialog form { display: flex; flex-direction: column; gap: 14px; padding: 20px 22px; }
+.dialog h2 { margin: 0; font-size: 17px; font-weight: 600; }
+.dialog p { margin: 0; line-height: 1.4; }
+.dialog .muted { color: var(--muted); font-size: 13px; }
+.dialog label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--muted); }
+.dialog .row { display: flex; gap: 12px; }
+.dialog .row label { flex: 1; }
+.dialog input, .dialog select {
+  font: inherit; font-size: 14px; color: var(--text); background: #1c1c1c;
+  border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; width: 100%;
+}
+.dialog input:focus, .dialog select:focus { outline: 2px solid var(--accent); outline-offset: 0; border-color: transparent; }
+.dialog menu { display: flex; justify-content: flex-end; gap: 8px; margin: 4px 0 0; padding: 0; }
+.dialog button { font: inherit; font-size: 14px; padding: 8px 14px; border-radius: 8px; border: 1px solid var(--line); background: transparent; color: var(--text); cursor: pointer; }
+.dialog button:hover { background: var(--panel-hover); }
+.dialog button.primary { background: var(--accent); border-color: var(--accent); color: #0b1a33; font-weight: 600; }
+.dialog button.primary.danger { background: var(--danger); border-color: var(--danger); color: #fff; }

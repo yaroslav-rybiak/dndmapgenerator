@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>D&D Map Editor</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<main>
+  <canvas id="canvas"></canvas>
+  <div id="badge" class="badge" aria-live="polite"><span id="badgeName"></span><span class="dot" aria-hidden="true"></span></div>
+  <div id="toast" class="toast" role="status"></div>
+  <input class="hidden" id="fileInput" type="file" accept="application/json,.json,.txt,text/plain" />
+  <div class="menu" id="menu"></div>
+</main>
+
+<dialog id="newMapDialog" class="dialog">
+  <form method="dialog">
+    <h2>New map</h2>
+    <label>Name <input name="name" required pattern="[A-Za-z0-9][A-Za-z0-9_-]{0,63}" autocomplete="off" /></label>
+    <div class="row">
+      <label>Columns <input name="cols" type="number" min="1" max="80" required /></label>
+      <label>Rows <input name="rows" type="number" min="1" max="80" required /></label>
+    </div>
+    <label>Fill with
+      <select name="terrain">
+        <option value="floor">Floor</option>
+        <option value="wall">Wall</option>
+        <option value="grass">Grass</option>
+        <option value="water">Water</option>
+      </select>
+    </label>
+    <menu>
+      <button type="submit" value="cancel" formnovalidate>Cancel</button>
+      <button type="submit" value="ok" class="primary">Create</button>
+    </menu>
+  </form>
+</dialog>
+
+<dialog id="saveAsDialog" class="dialog">
+  <form method="dialog">
+    <h2>Save map as</h2>
+    <label>Name <input name="name" required pattern="[A-Za-z0-9][A-Za-z0-9_-]{0,63}" autocomplete="off" placeholder="e.g. goblin-cave" /></label>
+    <p class="muted">Stored as maps/&lt;name&gt;.json on the server.</p>
+    <menu>
+      <button type="submit" value="cancel" formnovalidate>Cancel</button>
+      <button type="submit" value="ok" class="primary">Save</button>
+    </menu>
+  </form>
+</dialog>
+
+<dialog id="confirmDialog" class="dialog">
+  <form method="dialog">
+    <h2></h2>
+    <p></p>
+    <menu>
+      <button type="submit" value="cancel">Cancel</button>
+      <button type="submit" value="ok" class="primary">OK</button>
+    </menu>
+  </form>
+</dialog>
+
+<script type="module" src="src/main.js"></script>
+</body>
+</html>
